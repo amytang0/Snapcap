@@ -34,11 +34,9 @@ public class EditPhotoActivity extends Activity {
     private static String TAG = "EditPhotoActivity";
     private Bitmap mBitmap;
     private ImageView mImageView;
-    private View mCaption;
+    private CustomEditText mCaption;
     private DragGestureListener mDragGestureListener;
     private GestureDetector mDragGestureDetector;
-
-    private boolean onCaption = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,20 +44,10 @@ public class EditPhotoActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_photo);
         mImageView = (ImageView) findViewById(R.id.imageView1);
-        mCaption = findViewById(R.id.caption);
+        mCaption = (CustomEditText) findViewById(R.id.caption);
         mDragGestureListener = new DragGestureListener();
         mDragGestureDetector = new GestureDetector(this, mDragGestureListener);
-        mCaption.setVisibility(View.VISIBLE);
-        mCaption.setClickable(false);
         mCaption.clearFocus();
-        mCaption.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                onCaption = true;
-                // onTouchEvent(event);
-                return false;
-            }
-        });
         mImageView.requestFocus();
         setCapturedPhotoInImageView();
     }
@@ -140,13 +128,9 @@ public class EditPhotoActivity extends Activity {
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            Log.d(TAG, "scrolling");
-            if (onCaption) {
-                FrameLayout.MarginLayoutParams mlp =
-                        (FrameLayout.MarginLayoutParams) mCaption.getLayoutParams();
-               // mlp.leftMargin -= (int) distanceX;
-                mlp.topMargin -= (int) distanceY;
-                mCaption.setLayoutParams(mlp);
+            Log.d(TAG, "scrolling dist:" + distanceY);
+            if (mCaption.isCurrentlyTouched()) {
+                mCaption.setY(mCaption.getY() - distanceY);
                 return true;
             }
             return super.onScroll(e1, e2, distanceX, distanceY);
@@ -154,17 +138,13 @@ public class EditPhotoActivity extends Activity {
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            onCaption = false;
             mImageView.requestFocus();
             return true;
         }
 
         private boolean onObject(float x, float y) {
-
             Rect rect = new Rect();
             mCaption.getGlobalVisibleRect(rect);
-
-            Log.d(TAG, "x: " + (int)x+ " | y: "+(int)y + " rect"+rect.toShortString() );
             return rect.contains((int) x, (int) y);
         }
     }
