@@ -19,7 +19,7 @@
                 android:focusableInTouchMode="true"
                 android:longClickable="false"
                 android:layout_gravity="center"/>
-        <EditText
+        <com.example.SnapCap.CustomEditText
                 android:id="@+id/caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
